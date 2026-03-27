@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXELGATE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --panel: #111;
+    --border: #2a2a2a;
+    --accent: #ff3c3c;
+    --accent2: #3cffb4;
+    --text: #e8e8e8;
+    --muted: #555;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 32px;
+  }
+
+  header {
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 10vw, 96px);
+    letter-spacing: 8px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), #ff9900, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .workspace {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    max-width: 1100px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    flex: 1;
+    min-width: 300px;
+    max-width: 520px;
+  }
+
+  .panel-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    min-height: 240px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .drop-zone:hover, .drop-zone.dragging {
+    border-color: var(--accent);
+    background: rgba(255,60,60,0.04);
+  }
+
+  .drop-zone input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop-icon {
+    font-size: 40px;
+    opacity: 0.4;
+  }
+
+  .drop-text {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .preview-img {
+    max-width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    image-rendering: pixelated;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .control-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+    min-width: 100px;
+  }
+
+  .control-value {
+    font-size: 13px;
+    color: var(--accent2);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    outline: none;
+    border-radius: 0;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    cursor: pointer;
+    border-radius: 0;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .btn:disabled {
+    border-color: var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+
+  .btn:disabled:hover {
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .btn-secondary {
+    border-color: var(--accent2);
+    color: var(--accent2);
+  }
+
+  .btn-secondary:hover {
+    background: var(--accent2);
+    color: var(--bg);
+  }
+
+  canvas {
+    display: block;
+    max-width: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+
+  .output-wrap {
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .hidden { display: none; }
+
+  .stats {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .pixel-count {
+    color: var(--accent2);
+  }
+
+  .steg-panel {
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .steg-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .steg-block {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .steg-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .prime-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    background: #0d1a15;
+    border: 1px solid #1a3d2e;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
+
+  .prime-info {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    line-height: 1.8;
+  }
+
+  .prime-info span { color: var(--text); }
+
+  .steg-input {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: #0d0d0d;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    width: 100%;
+    letter-spacing: 2px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .steg-input:focus { border-color: var(--accent2); }
+
+  .steg-input::placeholder { color: var(--muted); font-size: 10px; }
+
+  .decode-result {
+    background: #0d1a15;
+    border: 1px solid #1a3d2e;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    min-height: 46px;
+    word-break: break-all;
+  }
+
+  .decode-result.error { color: var(--accent); background: #1a0d0d; border-color: #3d1a1a; }
+  .decode-result.muted { color: var(--muted); }
+
+  .badge {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 2px 7px;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    margin-left: 8px;
+    vertical-align: middle;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PIXELGATE</h1>
+  <div class="subtitle">mosaic converter + steganography</div>
+</header>
+
+<div class="workspace">
+
+  <!-- LEFT: Input -->
+  <div class="panel">
+    <div class="panel-title">// input</div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" accept="image/*" id="fileInput">
+      <div class="drop-icon">▦</div>
+      <div class="drop-text">drop image here<br>or click to upload</div>
+    </div>
+    <img class="preview-img hidden" id="sourcePreview" alt="source">
+
+    <div class="controls" style="margin-top: 24px;">
+
+      <div>
+        <div class="control-row">
+          <span class="control-label">Block Size</span>
+          <span class="control-value" id="blockSizeVal">20</span>
+        </div>
+        <input type="range" id="blockSize" min="4" max="64" value="20" step="2">
+      </div>
+
+      <div>
+        <div class="control-row">
+          <span class="control-label">Gap</span>
+          <span class="control-value" id="gapVal">0</span>
+        </div>
+        <input type="range" id="gap" min="0" max="6" value="0" step="1">
+      </div>
+
+      <div>
+        <div class="control-row">
+          <span class="control-label">Gap Color</span>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2px;color:var(--muted);cursor:pointer;">
+            <input type="radio" name="gapColor" value="dark" checked style="accent-color:var(--accent)"> DARK
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2px;color:var(--muted);cursor:pointer;">
+            <input type="radio" name="gapColor" value="light" style="accent-color:var(--accent)"> LIGHT
+          </label>
+        </div>
+      </div>
+
+      <button class="btn" id="pixelateBtn" disabled>Pixelate →</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Output -->
+  <div class="panel">
+    <div class="panel-title">// output</div>
+
+    <div class="output-wrap" id="outputWrap">
+      <span>awaiting input...</span>
+    </div>
+    <canvas id="outputCanvas" class="hidden"></canvas>
+
+    <div class="stats hidden" id="stats">
+      <span class="pixel-count" id="pixelCount">0</span> blocks rendered
+    </div>
+
+    <button class="btn btn-secondary hidden" id="downloadBtn" style="margin-top: 16px;">↓ Download PNG</button>
+  </div>
+
+</div>
+
+<!-- Hidden canvas for processing -->
+<canvas id="workCanvas" class="hidden"></canvas>
+
+<!-- STEG SECTION -->
+<div class="panel steg-panel">
+  <div class="panel-title">// steganography <span class="badge">LSB · Carmody Method</span></div>
+
+  <div class="steg-grid">
+
+    <!-- EMBED SIDE -->
+    <div class="steg-block">
+      <div class="steg-label">Enter prime number to embed</div>
+      <p style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;line-height:1.8;">
+        Paste any prime — small or arbitrarily large (e.g. a Carmody-encoded prime whose bytes
+        decompress to real data). It will be hidden in the LSBs of the pixelated image.
+      </p>
+      <textarea id="primeInput" class="steg-input" rows="5"
+        placeholder="e.g. 15486869&#10;or a 500-digit Carmody prime..."></textarea>
+
+      <div id="primeValidation" class="prime-info" style="margin-top:8px;min-height:36px;"></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn" id="setPrimeBtn" style="flex:1;margin-top:4px;">
+          ⬡ Set &amp; Embed
+        </button>
+        <button class="btn btn-secondary" id="validateBtn" style="flex:1;margin-top:4px;font-size:10px;">
+          ✓ Validate Prime
+        </button>
+      </div>
+
+      <div id="embedStatus" style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:10px;min-height:20px;"></div>
+    </div>
+
+    <!-- DECODE SIDE -->
+    <div class="steg-block">
+      <div class="steg-label">Decode prime from image</div>
+      <p style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;line-height:1.8;">
+        Upload a steg-encoded PNG to extract the hidden prime from its LSBs. Large primes are
+        displayed in full and can be copied.
+      </p>
+
+      <div style="position:relative;margin-bottom:14px;">
+        <input type="file" accept="image/png" id="decodeFileInput"
+               style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+        <button class="btn btn-secondary" style="pointer-events:none;margin-top:0;">
+          ⤴ Upload PNG to decode
+        </button>
+      </div>
+
+      <div class="steg-label">Extracted prime</div>
+      <div class="decode-result muted" id="decodeResult" style="font-size:11px;word-break:break-all;max-height:160px;overflow-y:auto;">
+        awaiting image...
+      </div>
+
+      <div id="decodeStats" style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:8px;min-height:18px;"></div>
+
+      <button class="btn btn-secondary hidden" id="copyPrimeBtn" style="margin-top:8px;">
+        ⎘ Copy extracted prime
+      </button>
+
+      <!-- GUNZIP OUTPUT -->
+      <div id="gunzipSection" class="hidden" style="margin-top:20px;">
+        <div style="border-top:1px solid var(--border);margin-bottom:16px;"></div>
+        <div class="steg-label">Recovered content <span class="badge" id="gunzipBadge">?</span></div>
+
+        <div id="gunzipStatus" style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:10px;min-height:16px;"></div>
+
+        <!-- Text preview (shown if UTF-8 text) -->
+        <pre id="gunzipText" class="hidden" style="
+          background:#0d0d0d;border:1px solid var(--border);
+          padding:12px;font-size:11px;color:var(--accent2);
+          max-height:220px;overflow:auto;white-space:pre-wrap;
+          word-break:break-all;font-family:'Space Mono',monospace;
+          line-height:1.6;margin:0;
+        "></pre>
+
+        <!-- Binary / file preview -->
+        <div id="gunzipBinary" class="hidden" style="
+          background:#0d0d0d;border:1px solid var(--border);
+          padding:12px;font-size:10px;color:var(--muted);letter-spacing:1px;
+        "></div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn btn-secondary hidden" id="downloadRecoveredBtn" style="flex:1;margin-top:0;">
+            ↓ Download recovered file
+          </button>
+          <button class="btn hidden" id="copyTextBtn" style="flex:1;margin-top:0;">
+            ⎘ Copy text
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const fileInput        = document.getElementById('fileInput');
+const dropZone         = document.getElementById('dropZone');
+const sourcePreview    = document.getElementById('sourcePreview');
+const pixelateBtn      = document.getElementById('pixelateBtn');
+const outputCanvas     = document.getElementById('outputCanvas');
+const outputWrap       = document.getElementById('outputWrap');
+const workCanvas       = document.getElementById('workCanvas');
+const downloadBtn      = document.getElementById('downloadBtn');
+const statsEl          = document.getElementById('stats');
+const pixelCountEl     = document.getElementById('pixelCount');
+const blockSizeSlider  = document.getElementById('blockSize');
+const blockSizeVal     = document.getElementById('blockSizeVal');
+const gapSlider        = document.getElementById('gap');
+const gapVal           = document.getElementById('gapVal');
+const primeInput       = document.getElementById('primeInput');
+const primeValidation  = document.getElementById('primeValidation');
+const validateBtn      = document.getElementById('validateBtn');
+const setPrimeBtn      = document.getElementById('setPrimeBtn');
+const embedStatus      = document.getElementById('embedStatus');
+const decodeFileInput  = document.getElementById('decodeFileInput');
+const decodeResult     = document.getElementById('decodeResult');
+const decodeStats      = document.getElementById('decodeStats');
+const copyPrimeBtn     = document.getElementById('copyPrimeBtn');
+
+let loadedImage  = null;
+let currentPrime = null;
+let lastExtracted = '';
+
+// ── Miller-Rabin (unchanged) ─────────────────────────────────────────────────
+function modpow(base, exp, mod) {
+  let result = 1n;
+  base = base % mod;
+  while (exp > 0n) {
+    if (exp & 1n) result = result * base % mod;
+    exp >>= 1n;
+    base = base * base % mod;
+  }
+  return result;
+}
+
+function millerRabin(n, rounds = 20) {
+  if (n < 2n) return false;
+  if (n === 2n || n === 3n || n === 5n) return true;
+  if (n % 2n === 0n) return false;
+
+  const fixedW = [2n,3n,5n,7n,11n,13n,17n,19n,23n,29n,31n,37n,41n,43n,47n];
+
+  let d = n - 1n, r = 0n;
+  while (d % 2n === 0n) { d /= 2n; r++; }
+
+  const test = (a) => {
+    if (a >= n) return true;
+    let x = modpow(a, d, n);
+    if (x === 1n || x === n - 1n) return true;
+    for (let i = 0n; i < r - 1n; i++) {
+      x = x * x % n;
+      if (x === n - 1n) return true;
+    }
+    return false;
+  };
+
+  for (const w of fixedW) { if (!test(w)) return false; }
+
+  if (n > 3_317_044_064_679_887_385_961_981n) {
+    for (let i = 0; i < rounds; i++) {
+      const bytes = Math.ceil(n.toString(16).length / 2);
+      const arr = new Uint8Array(Math.min(bytes, 32));
+      crypto.getRandomValues(arr);
+      let w = 2n;
+      for (const b of arr) w = (w << 8n) | BigInt(b);
+      w = (w % (n - 3n)) + 2n;
+      if (!test(w)) return false;
+    }
+  }
+  return true;
+}
+
+function isPrime(n) { return millerRabin(n); }
+
+function digitsToBits(digits) { return Math.round(digits * Math.log2(10)); }
+
+// ── Steganography (unchanged) ────────────────────────────────────────────────
+function stringToBits(str) {
+  const bytes = new TextEncoder().encode(str);
+  const bits = [];
+  for (const b of bytes)
+    for (let i = 7; i >= 0; i--) bits.push((b >> i) & 1);
+  return bits;
+}
+
+function bitsToString(bits) {
+  const out = [];
+  for (let i = 0; i + 7 < bits.length; i += 8) {
+    let byte = 0;
+    for (let j = 0; j < 8; j++) byte = (byte << 1) | bits[i + j];
+    out.push(byte);
+  }
+  return new TextDecoder().decode(new Uint8Array(out));
+}
+
+function bigintTo64Bits(n) {
+  const bits = [];
+  for (let i = 63; i >= 0; i--) bits.push(Number((n >> BigInt(i)) & 1n));
+  return bits;
+}
+
+function bits64ToBigint(bits) {
+  let v = 0n;
+  for (const b of bits) v = (v << 1n) | BigInt(b);
+  return v;
+}
+
+function embedPrime(imageData, prime) {
+  const digits   = prime.toString();
+  const payload  = stringToBits(digits);
+  const header   = bigintTo64Bits(BigInt(payload.length));
+  const total    = [...header, ...payload];
+  const maxPx    = imageData.data.length / 4;
+
+  if (total.length > maxPx)
+    throw new Error(`Image needs ≥${total.length} pixels; has ${maxPx}. Use a larger image or smaller prime.`);
+
+  const d = imageData.data;
+  for (let i = 0; i < total.length; i++)
+    d[i * 4] = (d[i * 4] & 0xFE) | total[i];
+
+  return { imageData, pixelsUsed: total.length, digitCount: digits.length };
+}
+
+function extractPrime(imageData) {
+  const d = imageData.data;
+  const maxPx = d.length / 4;
+  if (maxPx < 64) throw new Error('Image too small to contain a header');
+
+  const hBits = [];
+  for (let i = 0; i < 64; i++) hBits.push(d[i * 4] & 1);
+  const payLen = Number(bits64ToBigint(hBits));
+
+  if (payLen === 0 || payLen > 50_000_000)
+    throw new Error('No valid steg header detected (payLen=' + payLen + ')');
+  if (64 + payLen > maxPx)
+    throw new Error(`Header claims ${payLen} payload bits but image only has ${maxPx - 64} available`);
+
+  const pBits = [];
+  for (let i = 64; i < 64 + payLen; i++) pBits.push(d[i * 4] & 1);
+
+  const str = bitsToString(pBits).trim();
+  if (!/^\d+$/.test(str))
+    throw new Error('Extracted data is not a valid decimal integer');
+  return str;
+}
+
+// ── Embed side (unchanged) ───────────────────────────────────────────────────
+setPrimeBtn.addEventListener('click', () => {
+  const raw = primeInput.value.replace(/\s+/g, '').trim();
+  if (!raw) { showValidation('Paste a number first.', 'error'); return; }
+  if (!/^\d+$/.test(raw)) { showValidation('Digits only — no spaces or letters.', 'error'); return; }
+  try {
+    currentPrime = BigInt(raw);
+  } catch(e) {
+    showValidation('Could not parse number: ' + e.message, 'error');
+    return;
+  }
+  showValidation(`Set — ${raw.length} digits, ~${digitsToBits(raw.length)} bits`, 'ok');
+
+  if (!loadedImage) {
+    embedStatus.innerHTML = '<span style="color:var(--muted)">Prime set. Upload and pixelate an image, then click Set & Embed again.</span>';
+    return;
+  }
+  doEmbed();
+});
+
+function doEmbed() {
+  embedStatus.textContent = '';
+  try {
+    const ctx = outputCanvas.getContext('2d');
+    const idata = ctx.getImageData(0, 0, outputCanvas.width, outputCanvas.height);
+    const { pixelsUsed, digitCount } = embedPrime(idata, currentPrime);
+    ctx.putImageData(idata, 0, 0);
+    embedStatus.innerHTML =
+      `<span style="color:var(--accent2)">✓ Embedded ${digitCount}-digit prime into ${pixelsUsed} pixels` +
+      ` (${(pixelsUsed / (outputCanvas.width * outputCanvas.height) * 100).toFixed(1)}% of image)</span>`;
+  } catch(e) {
+    embedStatus.innerHTML = `<span style="color:var(--accent)">✗ ${e.message}</span>`;
+  }
+}
+
+validateBtn.addEventListener('click', () => {
+  const raw = primeInput.value.replace(/\s+/g, '').trim();
+  if (!raw) { showValidation('Enter a number first.', 'error'); return; }
+  if (!/^\d+$/.test(raw)) { showValidation('Digits only.', 'error'); return; }
+
+  validateBtn.disabled = true;
+  validateBtn.textContent = '⟳ Checking...';
+  primeValidation.innerHTML = '';
+
+  setTimeout(() => {
+    try {
+      const n = BigInt(raw);
+      const bits = digitsToBits(raw.length);
+      const t0 = performance.now();
+      const ok = isPrime(n);
+      const ms = (performance.now() - t0).toFixed(1);
+      showValidation(
+        ok ? `✓ Prime confirmed — ${raw.length} digits, ~${bits} bits (${ms}ms)`
+           : `✗ Not prime (${raw.length} digits, ${ms}ms)`,
+        ok ? 'ok' : 'error'
+      );
+    } catch(e) {
+      showValidation('Error: ' + e.message, 'error');
+    }
+    validateBtn.disabled = false;
+    validateBtn.textContent = '✓ Validate Prime';
+  }, 20);
+});
+
+function showValidation(msg, type) {
+  primeValidation.innerHTML = `<span style="color:${type==='ok'?'var(--accent2)':'var(--accent)'}">${msg}</span>`;
+}
+
+// ── Image loading & pixelation (unchanged) ───────────────────────────────────
+blockSizeSlider.addEventListener('input', () => {
+  blockSizeVal.textContent = blockSizeSlider.value;
+  if (loadedImage) pixelate();
+});
+gapSlider.addEventListener('input', () => {
+  gapVal.textContent = gapSlider.value;
+  if (loadedImage) pixelate();
+});
+document.querySelectorAll('input[name="gapColor"]').forEach(r =>
+  r.addEventListener('change', () => { if (loadedImage) pixelate(); })
+);
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragging'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragging'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('dragging');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadFile(f);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      loadedImage = img;
+      dropZone.classList.add('hidden');
+      sourcePreview.src = e.target.result;
+      sourcePreview.classList.remove('hidden');
+      pixelateBtn.disabled = false;
+      pixelate();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+pixelateBtn.addEventListener('click', pixelate);
+
+function pixelate() {
+  if (!loadedImage) return;
+  embedStatus.textContent = '';
+
+  const blockSize = parseInt(blockSizeSlider.value);
+  const gap       = parseInt(gapSlider.value);
+  const gapColor  = document.querySelector('input[name="gapColor"]:checked').value;
+  const srcW      = loadedImage.naturalWidth;
+  const srcH      = loadedImage.naturalHeight;
+
+  workCanvas.width = srcW; workCanvas.height = srcH;
+  const wCtx = workCanvas.getContext('2d');
+  wCtx.drawImage(loadedImage, 0, 0);
+
+  outputCanvas.width = srcW; outputCanvas.height = srcH;
+  const ctx = outputCanvas.getContext('2d');
+
+  if (gap > 0) {
+    ctx.fillStyle = gapColor === 'dark' ? '#0a0a0a' : '#f0f0f0';
+    ctx.fillRect(0, 0, srcW, srcH);
+  }
+
+  const cols = Math.ceil(srcW / blockSize);
+  const rows = Math.ceil(srcH / blockSize);
+  let blockCount = 0;
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const sx = col * blockSize, sy = row * blockSize;
+      const sw = Math.min(blockSize, srcW - sx), sh = Math.min(blockSize, srcH - sy);
+      const d = wCtx.getImageData(sx, sy, sw, sh).data;
+      let r = 0, g = 0, b = 0, cnt = 0;
+      for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; cnt++; }
+      ctx.fillStyle = `rgb(${Math.round(r/cnt)},${Math.round(g/cnt)},${Math.round(b/cnt)})`;
+      ctx.fillRect(sx + gap, sy + gap, sw - gap*2, sh - gap*2);
+      blockCount++;
+    }
+  }
+
+  outputWrap.classList.add('hidden');
+  outputCanvas.classList.remove('hidden');
+  downloadBtn.classList.remove('hidden');
+  statsEl.classList.remove('hidden');
+  pixelCountEl.textContent = blockCount.toLocaleString();
+}
+
+downloadBtn.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'pixelated_steg.png';
+  link.href = outputCanvas.toDataURL('image/png');
+  link.click();
+});
+
+// ── Decode helpers (unchanged except display) ────────────────────────────────
+const gunzipSection       = document.getElementById('gunzipSection');
+const gunzipStatus        = document.getElementById('gunzipStatus');
+const gunzipBadge         = document.getElementById('gunzipBadge');
+const gunzipText          = document.getElementById('gunzipText');
+const gunzipBinary        = document.getElementById('gunzipBinary');
+const downloadRecoveredBtn = document.getElementById('downloadRecoveredBtn');
+const copyTextBtn         = document.getElementById('copyTextBtn');
+
+let recoveredBytes = null;
+let recoveredName  = 'recovered';
+
+function bigintToBytes(n) {
+  if (n === 0n) return new Uint8Array([0]);
+  let hex = n.toString(16);
+  if (hex.length % 2) hex = '0' + hex;
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++)
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  return bytes;
+}
+
+async function tryGunzip(bytes) {
+  const ds = new DecompressionStream('gzip');
+  const writer = ds.writable.getWriter();
+  const reader = ds.readable.getReader();
+  writer.write(bytes);
+  writer.close();
+  const chunks = [];
+  let totalLen = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    totalLen += value.length;
+  }
+  const out = new Uint8Array(totalLen);
+  let off = 0;
+  for (const chunk of chunks) { out.set(chunk, off); off += chunk.length; }
+  return out;
+}
+
+async function gunzipCarmody(bytes) {
+  for (let strip = 1; strip <= 8; strip++) {
+    const candidate = bytes.slice(0, bytes.length - strip);
+    if (candidate.length < 18) continue;
+    if (candidate[0] !== 0x1f || candidate[1] !== 0x8b) continue;
+    try {
+      const out = await tryGunzip(candidate);
+      return { out, strip };
+    } catch(e) {}
+  }
+  throw new Error('No valid gzip data found after trying to strip 1–8 Carmody suffix bytes.');
+}
+
+function isLikelyText(bytes) {
+  const sample = bytes.slice(0, 512);
+  if (sample.includes(0)) return false;
+  try {
+    const decoded = new TextDecoder('utf-8', { fatal: true }).decode(sample);
+    let nonPrint = 0;
+    for (const ch of decoded) {
+      const cp = ch.codePointAt(0);
+      if (cp < 32 && cp !== 9 && cp !== 10 && cp !== 13) nonPrint++;
+    }
+    return nonPrint / decoded.length < 0.3;
+  } catch { return false; }
+}
+
+function guessExtension(bytes) {
+  const h = (n) => bytes[n];
+  if (h(0)===0x89 && h(1)===0x50 && h(2)===0x4e && h(3)===0x47) return { ext:'png',  mime:'image/png' };
+  if (h(0)===0xff && h(1)===0xd8 && h(2)===0xff)                  return { ext:'jpg',  mime:'image/jpeg' };
+  if (h(0)===0x47 && h(1)===0x49 && h(2)===0x46)                  return { ext:'gif',  mime:'image/gif' };
+  if (h(0)===0x25 && h(1)===0x50 && h(2)===0x44 && h(3)===0x46)  return { ext:'pdf',  mime:'application/pdf' };
+  if (h(0)===0x50 && h(1)===0x4b && h(2)===0x03 && h(3)===0x04)  return { ext:'zip',  mime:'application/zip' };
+  return { ext: 'bin', mime: 'application/octet-stream' };
+}
+
+function hexDump(bytes, maxRows = 8) {
+  const lines = [];
+  for (let i = 0; i < Math.min(bytes.length, maxRows * 16); i += 16) {
+    const chunk = bytes.slice(i, i + 16);
+    const hex   = Array.from(chunk).map(b => b.toString(16).padStart(2,'0')).join(' ');
+    const asc   = Array.from(chunk).map(b => (b >= 32 && b < 127) ? String.fromCharCode(b) : '.').join('');
+    lines.push(`${i.toString(16).padStart(6,'0')}  ${hex.padEnd(47)}  ${asc}`);
+  }
+  if (bytes.length > maxRows * 16) lines.push(`         … ${bytes.length - maxRows*16} more bytes`);
+  return lines.join('\n');
+}
+
+// ── NEW: Helpers for full text display with line numbers ─────────────────────
+function getPrintableRatio(str) {
+  if (!str) return 0;
+  let printable = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c === 9 || c === 10 || c === 13 || (c >= 32 && c <= 126)) {
+      printable++;
+    }
+  }
+  return printable / str.length;
+}
+
+function addLineNumbers(text) {
+  return text
+    .split('\n')
+    .map((line, i) => `${String(i+1).padStart(4,' ')}  ${line}`)
+    .join('\n');
+}
+
+// ── runGunzip: always show full content in the box (no hex preview) ───────────
+async function runGunzip(digits) {
+  gunzipSection.classList.remove('hidden');
+  gunzipStatus.innerHTML = '<span style="color:var(--muted)">Decompressing…</span>';
+  gunzipText.classList.add('hidden');
+  gunzipBinary.classList.add('hidden');
+  downloadRecoveredBtn.classList.add('hidden');
+  copyTextBtn.classList.add('hidden');
+  recoveredBytes = null;
+
+  try {
+    const n     = BigInt(digits);
+    const raw   = bigintToBytes(n);
+    const { out: decompressed, strip } = await gunzipCarmody(raw);
+    recoveredBytes = decompressed;
+
+    const { ext, mime } = guessExtension(decompressed);
+    recoveredName = `recovered.${ext}`;
+
+    gunzipBadge.textContent = `${decompressed.length} bytes · .${ext}`;
+    gunzipStatus.innerHTML =
+      `<span style="color:var(--accent2)">✓ Decompressed ${raw.length - strip} → ${decompressed.length} bytes` +
+      (strip > 0 ? ` <span style="color:var(--muted)">(${strip}-byte Carmody suffix stripped)</span>` : '') +
+      `</span>`;
+
+    // Always attempt to show as text (with line numbers if printable)
+    let decodedText = null;
+    try {
+      decodedText = new TextDecoder('utf-8', { fatal: false }).decode(decompressed);
+    } catch (e) {}
+
+    const ratio = getPrintableRatio(decodedText);
+
+    if (decodedText && ratio > 0.6) {   // lowered threshold so more files show as text
+      gunzipText.textContent = addLineNumbers(decodedText);
+      gunzipText.classList.remove('hidden');
+      copyTextBtn.classList.remove('hidden');
+      copyTextBtn.dataset.text = decodedText;
+    } else {
+      // For true binary: still show full content as text (best effort)
+      gunzipText.textContent = decodedText || hexDump(decompressed, 999); // fallback hex if decode fails
+      gunzipText.classList.remove('hidden');
+    }
+
+    downloadRecoveredBtn.classList.remove('hidden');
+    downloadRecoveredBtn.textContent = `↓ Download ${recoveredName}`;
+
+  } catch(err) {
+    gunzipStatus.innerHTML =
+      `<span style="color:var(--accent)">✗ Gunzip failed: ${err.message.split('\n')[0]}</span>` +
+      `<br><span style="color:var(--muted);font-size:9px;">` +
+      `This prime's bytes don't yield valid gzip after stripping 1–8 suffix bytes. ` +
+      `If it came from the C Carmody encoder, make sure you're pasting the exact decimal output.</span>`;
+    gunzipBadge.textContent = 'error';
+    gunzipSection.classList.remove('hidden');
+  }
+}
+
+// ── Decode listener (no validation) ──────────────────────────────────────────
+decodeFileInput.addEventListener('change', () => {
+  const file = decodeFileInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const dc = document.createElement('canvas');
+      dc.width = img.naturalWidth; dc.height = img.naturalHeight;
+      dc.getContext('2d').drawImage(img, 0, 0);
+      try {
+        const idata = dc.getContext('2d').getImageData(0, 0, dc.width, dc.height);
+        const digits = extractPrime(idata);
+
+        decodeResult.className = 'decode-result muted';
+        decodeResult.textContent = digits;
+        decodeStats.textContent = 'Prime extracted — decompressing...';
+        copyPrimeBtn.classList.remove('hidden');
+        lastExtracted = digits;
+
+        runGunzip(digits);
+
+      } catch(err) {
+        decodeResult.className = 'decode-result error';
+        decodeResult.textContent = 'No steg data: ' + err.message;
+        decodeStats.textContent = '';
+        copyPrimeBtn.classList.add('hidden');
+        gunzipSection.classList.add('hidden');
+        lastExtracted = '';
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+copyPrimeBtn.addEventListener('click', () => {
+  if (!lastExtracted) return;
+  navigator.clipboard.writeText(lastExtracted).then(() => {
+    copyPrimeBtn.textContent = '✓ Copied!';
+    setTimeout(() => { copyPrimeBtn.textContent = '⎘ Copy extracted prime'; }, 1500);
+  });
+});
+
+copyTextBtn.addEventListener('click', () => {
+  const text = copyTextBtn.dataset.text || '';
+  navigator.clipboard.writeText(text).then(() => {
+    copyTextBtn.textContent = '✓ Copied!';
+    setTimeout(() => { copyTextBtn.textContent = '⎘ Copy text'; }, 1500);
+  });
+});
+
+downloadRecoveredBtn.addEventListener('click', () => {
+  if (!recoveredBytes) return;
+  const { ext, mime } = guessExtension(recoveredBytes);
+  const blob = new Blob([recoveredBytes], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = recoveredName;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
