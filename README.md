@@ -36,6 +36,10 @@ gcc -O2 -o iLLPrime iLLPrime.c -lz -lssl -lcrypto -lpthread -lm
 ```
 ./iLLPrime -t "we are everywhere" -o test.prime -p full
 ```
+- or you could generate a prime from a file, img, source code, etc ...
+```
+./iLLPrime -f file.c -o file.prime -p full
+```
 <img width="914" height="749" alt="everywhere" src="https://github.com/user-attachments/assets/e7128b51-7076-4aee-8c32-30588a2c9ce5" />
 
 
