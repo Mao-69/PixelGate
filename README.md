@@ -14,6 +14,15 @@
 
 Together they allow you to turn any file (source code, documents, images, etc.) into a mathematically interesting prime that can be secretly embedded in a seemingly innocent pixel-art image.
 
+# 2. PIXELGATE Web App
+- Pixelates your image with configurable block size and gaps.
+Embeds the large prime (from the C tool) into the red-channel LSBs of the pixelated image.
+Extracts the prime from any steg-encoded PNG.
+Automatically decompresses the Carmody prime and shows the recovered original content (with line numbers for text files) or offers a download for binary files.
+
+No server required — everything runs in your browser.
+<img width="1163" height="879" alt="Screenshot 2026-03-27 at 00-18-30 PIXELGATE" src="https://github.com/user-attachments/assets/c04f8159-9ae3-4b1e-9316-c81652343309" />
+
 
 
 ```
