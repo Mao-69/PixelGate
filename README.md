@@ -42,6 +42,16 @@ gcc -O2 -o iLLPrime iLLPrime.c -lz -lssl -lcrypto -lpthread -lm
 ```
 <img width="914" height="749" alt="everywhere" src="https://github.com/user-attachments/assets/e7128b51-7076-4aee-8c32-30588a2c9ce5" />
 
+- Using iLLPrime to recover content from the prime 4015900675360164941251164573085381583763085502225938239902804756060548864700681100564889637
+```
+./iLLPrime -f test.prime | gunzip
+```
+```
+We are everywhere
+```
+
+# Example using the Web App with source code
+
 ### Example using a Prime generated from Lockr.c source code
 
 <img width="1156" height="884" alt="Screenshot 2026-03-27 at 00-51-52 PIXELGATE" src="https://github.com/user-attachments/assets/aff42513-0a84-4e96-93eb-3eac0960f8d4" />
