@@ -23,6 +23,7 @@ Automatically decompresses the Carmody prime and shows the recovered original co
 No server required — everything runs in your browser.
 <img width="1163" height="879" alt="Screenshot 2026-03-27 at 00-18-30 PIXELGATE" src="https://github.com/user-attachments/assets/c04f8159-9ae3-4b1e-9316-c81652343309" />
 
+<img width="1156" height="884" alt="Screenshot 2026-03-27 at 00-51-52 PIXELGATE" src="https://github.com/user-attachments/assets/aff42513-0a84-4e96-93eb-3eac0960f8d4" />
 
 
 ```
