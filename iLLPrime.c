@@ -1,7 +1,7 @@
 /*
- * primer.c — Encode arbitrary data as a prime number (Carmody method).
+ * iLLPrimer.c — Encode arbitrary data as a prime number (Carmody method).
  * Clean bordered UI with proper alignment and prime display.
- * gcc -O2 -o primer primer.c -lz -lssl -lcrypto -lpthread -lm
+ * gcc -O2 -o iLLPrime iLLPrime.c -lz -lssl -lcrypto -lpthread -lm
  */
 
 #include <stdio.h>
