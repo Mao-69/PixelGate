@@ -23,9 +23,7 @@ Automatically decompresses the Carmody prime and shows the recovered original co
 No server required — everything runs in your browser.
 <img width="1163" height="879" alt="Screenshot 2026-03-27 at 00-18-30 PIXELGATE" src="https://github.com/user-attachments/assets/c04f8159-9ae3-4b1e-9316-c81652343309" />
 
-<img width="1156" height="884" alt="Screenshot 2026-03-27 at 00-51-52 PIXELGATE" src="https://github.com/user-attachments/assets/aff42513-0a84-4e96-93eb-3eac0960f8d4" />
-
-
+### Generate an Illegal Prime to encode
 ```
 git clone https://github.com/Mao-69/PixelGate.git
 ```
@@ -33,5 +31,14 @@ git clone https://github.com/Mao-69/PixelGate.git
 cd PixelGate
 ```
 ```
-gcc -O2 -o primer primer.c -lz -lssl -lcrypto -lpthread -lm
+gcc -O2 -o iLLPrime iLLPrime.c -lz -lssl -lcrypto -lpthread -lm
+```
+```
+./iLLPrime -t "we are everywhere" -o test.prime -p full
+```
+<img width="932" height="767" alt="everywhere" src="https://github.com/user-attachments/assets/f4c27e9f-0a08-4a72-a9d0-c23fc94bc0c2" />
+
+
+<img width="1156" height="884" alt="Screenshot 2026-03-27 at 00-51-52 PIXELGATE" src="https://github.com/user-attachments/assets/aff42513-0a84-4e96-93eb-3eac0960f8d4" />
+
 ```
