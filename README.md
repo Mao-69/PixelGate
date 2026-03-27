@@ -36,7 +36,8 @@ gcc -O2 -o iLLPrime iLLPrime.c -lz -lssl -lcrypto -lpthread -lm
 ```
 ./iLLPrime -t "we are everywhere" -o test.prime -p full
 ```
-<img width="932" height="767" alt="everywhere" src="https://github.com/user-attachments/assets/f4c27e9f-0a08-4a72-a9d0-c23fc94bc0c2" />
+<img width="914" height="749" alt="everywhere" src="https://github.com/user-attachments/assets/e7128b51-7076-4aee-8c32-30588a2c9ce5" />
+
 
 
 <img width="1156" height="884" alt="Screenshot 2026-03-27 at 00-51-52 PIXELGATE" src="https://github.com/user-attachments/assets/aff42513-0a84-4e96-93eb-3eac0960f8d4" />
